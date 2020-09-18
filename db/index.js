@@ -61,8 +61,9 @@ function closeConnection() {
  * @param type  平台
  * @param index 当前页
  * @param size  每页数据量
+ * @param noview 是否不记录查看次数
  */
-function query(id, type, index, size) {
+function query(id, type, index, size, noview) {
     return new Promise( resolve => {
         index = parseInt(index) || 0
         size = parseInt(size) || 1
@@ -70,8 +71,17 @@ function query(id, type, index, size) {
         if (id) {
             _db.collection(type).find({id}).toArray((err, doc) => {
                 if (err) throw err
-                _data.data = doc
-                resolve(_data)
+                if (noview) {
+                    _data.data = doc
+                    resolve(_data)
+                    return
+                }
+                _db.collection(type).updateOne({id},
+                    {$set: {view: doc[0].view+1}},(err, res) => {
+                        if (err) throw err
+                        _data.data = doc
+                        resolve(_data)
+                    })
             })
             return
         }
