@@ -42,7 +42,7 @@ router.post('/upload', upload.single('pic'), async ctx => {
 router.get('/query', async ctx => {
     const params = ctx.request.query
     if (!(params.type === 'pku')) return ctx.body = {code: 20000, data: {message: '缺少参数或着参数不合法'}}
-    const data = await query(params.id, params.type, params.index, params.size)
+    const data = await query(params.id, params.type, params.index, params.size, params.code, params.noview)
     ctx.body = {code: 20000, data}
 })
 

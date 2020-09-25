@@ -61,24 +61,28 @@ function closeConnection() {
  * @param type  平台
  * @param index 当前页
  * @param size  每页数据量
+ * @param code  验证码
  * @param noview 是否不记录查看次数
  */
-function query(id, type, index, size, noview) {
+function query(id, type, index, size, code, noview) {
     return new Promise( resolve => {
         index = parseInt(index) || 0
         size = parseInt(size) || 1
         const _data = {}
         if (id) {
+            id = id.toUpperCase()
             _db.collection(type).find({id}).toArray((err, doc) => {
                 if (err) throw err
+                console.log("code " + code && doc[0].verifyCode != code)
+                if (code && doc[0].verifyCode != code) return resolve({})
                 if (noview) {
                     _data.data = doc
                     resolve(_data)
                     return
                 }
                 _db.collection(type).updateOne({id},
-                    {$set: {view: doc[0].view+1}},(err, res) => {
-                        if (err) throw err
+                    {$set: {view: doc[0].view ? doc[0].view + 1 : 1}},(err, res) => {
+                        if (err) console.log(err)
                         _data.data = doc
                         resolve(_data)
                     })

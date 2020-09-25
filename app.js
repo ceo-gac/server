@@ -7,6 +7,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const cors = require('@koa/cors')
 const session = require('koa-session');
+const { generate} = require('./utils/license')
 
 const db = require('./db')
 
@@ -15,6 +16,8 @@ const users = require('./routes/users')
 const manager = require('./routes/manager')
 
 app.keys = ['ceo!!!!'];
+
+generate()
 
 const CONFIG = {
   key: 'sess', /** (string) cookie key (default is koa.sess) */
