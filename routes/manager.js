@@ -3,6 +3,7 @@ const pku = require('../db/pku')
 const { query } = require('../db/index')
 const multer = require('@koa/multer')
 const fs = require('fs')
+const { generatePku } = require('../utils/license')
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -44,6 +45,15 @@ router.get('/query', async ctx => {
     if (!(params.type === 'pku')) return ctx.body = {code: 20000, data: {message: '缺少参数或着参数不合法'}}
     const data = await query(params.id, params.type, params.index, params.size, params.code, params.noview)
     ctx.body = {code: 20000, data}
+})
+
+router.get('/license', async ctx => {
+    const params = ctx.request.query
+    const data = await query(params.id, params.type, null, null, params.code, true)
+    const path = await generatePku(data)
+    ctx.set('content-type', 'image/jpeg')
+    ctx.body = fs.readFileSync(path)
+    fs.unlinkSync(path)
 })
 
 module.exports = router
