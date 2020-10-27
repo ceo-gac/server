@@ -5,7 +5,7 @@ module.exports = {
     },
     admin: {
         username: 'admin',
-        password: 'admin'
+        password: 'lrz123'
     },
     template: {
         front: 'public/images/front.jpg',
