@@ -3,14 +3,11 @@ const gm = require('gm').subClass({ imageMagick: false })
 const QRCode = require('qrcode')
 const config = require('../config')
 
-QRCode.toBuffer('http://baidu.com', {errorCorrectionLevel: 'H'}, (err, url) => {
-
-})
 
 function generatePku(info) {
     return new Promise(resolve => {
         info = info.data[0]
-        const url = `http://bjdxgac.com/query?id=${info.id}&code=${info.verifyCode}&type=pku`
+        const url = `http://bjdxgac.com/query?id=${info.id}&code=${info.verifyCode}`
         const qrPath = `public/pic/${info.id}.png`
         const target = `public/pic/${info.id.slice(0,2)}/license_${info.id.slice(2)}.jpg`
         // 生成查询二维码

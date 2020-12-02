@@ -73,32 +73,43 @@ function query(id, type, index, size, code, noview) {
             id = id.toUpperCase()
             _db.collection(type).find({id}).toArray((err, doc) => {
                 if (err) throw err
-                console.log("code " + code && doc[0].verifyCode != code)
                 if (code && doc[0].verifyCode != code) return resolve({})
                 if (noview) {
                     _data.data = doc
-                    resolve(_data)
-                    return
+                    console.log(doc)
+                    return resolve(_data)
                 }
                 _db.collection(type).updateOne({id},
                     {$set: {view: doc[0].view ? doc[0].view + 1 : 1}},(err, res) => {
                         if (err) console.log(err)
                         _data.data = doc
-                        resolve(_data)
+                        return resolve(_data)
                     })
             })
-            return
+        } else {
+            const data = _db.collection(type).find()
+            data.skip(index * size).limit(size).toArray(async (err, doc) => {
+                if (err) throw err
+                _data.count = await data.count()
+                _data.data = doc
+                resolve(_data)
+            })
         }
-        const data = _db.collection(type).find()
-        data.skip(index * size).limit(size).toArray(async (err, doc) => {
-            if (err) throw err
-            _data.count = await data.count()
-            _data.data = doc
-            resolve(_data)
+    })
+}
+
+// 删除证书
+function removeOne(id, type) {
+    return new Promise(resolve => {
+        id = id.toUpperCase()
+        _db.collection(type).deleteOne({id}).then(() => {
+            resolve(id)
+        }).catch(err => {
+            resolve(false)
         })
     })
 }
 
 module.exports = {
-    connect, init, db: () => _db, connection: () => _connection, closeConnection, query
+    connect, init, db: () => _db, connection: () => _connection, closeConnection, query, removeOne
 }
